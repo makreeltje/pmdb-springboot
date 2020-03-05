@@ -1,12 +1,34 @@
 package com.pmdb.api.controllers;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.pmdb.api.models.movie.Movie;
+import com.pmdb.api.service.MovieService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/movie")
+@RequestMapping("/api/movies")
 public class MovieController {
+
+    @Autowired
+    MovieService movieService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('USER')")
+    public Collection<Movie> getAllMovies() {
+        Collection<Movie> movies = movieService.getAllMovies();
+        return movies;
+    }
+
+    @GetMapping("{id}")
+    @PreAuthorize("hasRole('USER')")
+    public Optional<Movie> getMovie(@PathVariable long id) {
+        Optional<Movie> movie = movieService.findById(id);
+        return movie;
+    }
 
 }

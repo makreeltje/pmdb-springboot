@@ -7,6 +7,7 @@ import com.pmdb.api.payload.request.LoginRequest;
 import com.pmdb.api.payload.request.SignupRequest;
 import com.pmdb.api.payload.response.JwtResponse;
 import com.pmdb.api.payload.response.MessageResponse;
+import com.pmdb.api.repository.user.EmailRepository;
 import com.pmdb.api.repository.user.RoleRepository;
 import com.pmdb.api.repository.user.UserRepository;
 import com.pmdb.api.security.jwt.JwtUtils;
@@ -38,6 +39,9 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    EmailRepository emailRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -80,11 +84,11 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        /*if (userRepository.knownByEmail(signUpRequest.getEmail())) {
+        if (!emailRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: This email is not allowed to register an email. Please contact administrator!"));
-        }*/
+                    .body(new MessageResponse("Error: This email is not allowed to register an account. Please contact administrator!"));
+        }
 
         // Create new user's account
         User user = new User(signUpRequest.getUsername(),

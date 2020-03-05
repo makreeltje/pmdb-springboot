@@ -20,6 +20,7 @@ public class Movie {
 
     private String status;
 
+    @Lob
     private String overview;
 
     private Date inCinemas;
