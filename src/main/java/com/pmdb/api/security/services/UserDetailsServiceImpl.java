@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pmdb.api.models.User;
-import com.pmdb.api.repository.UserRepository;
+import com.pmdb.api.models.user.User;
+import com.pmdb.api.repository.user.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

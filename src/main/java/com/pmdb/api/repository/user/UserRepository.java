@@ -1,6 +1,6 @@
-package com.pmdb.api.repository;
+package com.pmdb.api.repository.user;
 
-import com.pmdb.api.models.User;
+import com.pmdb.api.models.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

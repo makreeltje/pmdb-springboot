@@ -1,14 +1,14 @@
 package com.pmdb.api.controllers;
 
-import com.pmdb.api.models.ERole;
-import com.pmdb.api.models.Role;
-import com.pmdb.api.models.User;
+import com.pmdb.api.models.user.ERole;
+import com.pmdb.api.models.user.Role;
+import com.pmdb.api.models.user.User;
 import com.pmdb.api.payload.request.LoginRequest;
 import com.pmdb.api.payload.request.SignupRequest;
 import com.pmdb.api.payload.response.JwtResponse;
 import com.pmdb.api.payload.response.MessageResponse;
-import com.pmdb.api.repository.RoleRepository;
-import com.pmdb.api.repository.UserRepository;
+import com.pmdb.api.repository.user.RoleRepository;
+import com.pmdb.api.repository.user.UserRepository;
 import com.pmdb.api.security.jwt.JwtUtils;
 import com.pmdb.api.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +79,12 @@ public class AuthController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
+
+        /*if (userRepository.knownByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: This email is not allowed to register an email. Please contact administrator!"));
+        }*/
 
         // Create new user's account
         User user = new User(signUpRequest.getUsername(),
