@@ -9,7 +9,7 @@ public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String title;
     private String sortTitle;
@@ -20,7 +20,7 @@ public class Movie {
 
     private String status;
 
-    @Lob
+    @Column(columnDefinition = "text")
     private String overview;
 
     private Date inCinemas;
@@ -38,11 +38,12 @@ public class Movie {
     private Boolean isAvailable;
 
     private Date added;
+    private Date lastInfoSync;
 
     public Movie() {
     }
 
-    public Movie(Integer id, String title, String sortTitle, String cleanTitle, String slugTitle, String sizeOnDisk, String status, String overview, Date inCinemas, Date physicalRelease, String website, Boolean downloaded, String youTubeTrailerId, String studio, Boolean isAvailable, Date added) {
+    public Movie(Long id, String title, String sortTitle, String cleanTitle, String slugTitle, String sizeOnDisk, String status, String overview, Date inCinemas, Date physicalRelease, String website, Boolean downloaded, String youTubeTrailerId, String studio, Boolean isAvailable, Date added, Date lastInfoSync) {
         this.id = id;
         this.title = title;
         this.sortTitle = sortTitle;
@@ -59,13 +60,14 @@ public class Movie {
         this.studio = studio;
         this.isAvailable = isAvailable;
         this.added = added;
+        this.lastInfoSync = lastInfoSync;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -189,6 +191,14 @@ public class Movie {
         this.added = added;
     }
 
+    public Date getLastInfoSync() {
+        return lastInfoSync;
+    }
+
+    public void setLastInfoSync(Date lastInfoSync) {
+        this.lastInfoSync = lastInfoSync;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -208,6 +218,7 @@ public class Movie {
                 ", studio='" + studio + '\'' +
                 ", isAvailable=" + isAvailable +
                 ", added=" + added +
+                ", lastInfoSync=" + lastInfoSync +
                 '}';
     }
 }
