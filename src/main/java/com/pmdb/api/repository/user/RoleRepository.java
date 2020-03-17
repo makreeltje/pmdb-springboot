@@ -1,7 +1,7 @@
-package com.pmdb.api.repository;
+package com.pmdb.api.repository.user;
 
-import com.pmdb.api.models.ERole;
-import com.pmdb.api.models.Role;
+import com.pmdb.api.models.user.ERole;
+import com.pmdb.api.models.user.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

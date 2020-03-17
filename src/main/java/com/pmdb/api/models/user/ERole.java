@@ -1,4 +1,4 @@
-package com.pmdb.api.models;
+package com.pmdb.api.models.user;
 
 public enum ERole {
     ROLE_USER,
