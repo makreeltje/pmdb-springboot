@@ -1,5 +1,8 @@
 package com.pmdb.api.models.movie;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -8,47 +11,33 @@ import java.util.Date;
 public class Movie {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
     private String sortTitle;
     private String cleanTitle;
-    private String slugTitle;
-
     private String sizeOnDisk;
-
     private String status;
-
     @Column(columnDefinition = "text")
     private String overview;
-
     private Date inCinemas;
-
     private Date physicalRelease;
-
     private String website;
-
     private Boolean downloaded;
-
     private String youTubeTrailerId;
-
     private String studio;
-
     private Boolean isAvailable;
-
     private Date added;
     private Date lastInfoSync;
 
     public Movie() {
     }
 
-    public Movie(Long id, String title, String sortTitle, String cleanTitle, String slugTitle, String sizeOnDisk, String status, String overview, Date inCinemas, Date physicalRelease, String website, Boolean downloaded, String youTubeTrailerId, String studio, Boolean isAvailable, Date added, Date lastInfoSync) {
+    public Movie(Long id, String title, String sortTitle, String cleanTitle, String sizeOnDisk, String status, String overview, Date inCinemas, Date physicalRelease, String website, Boolean downloaded, String youTubeTrailerId, String studio, Boolean isAvailable, Date added, Date lastInfoSync) {
         this.id = id;
         this.title = title;
         this.sortTitle = sortTitle;
         this.cleanTitle = cleanTitle;
-        this.slugTitle = slugTitle;
         this.sizeOnDisk = sizeOnDisk;
         this.status = status;
         this.overview = overview;
@@ -93,14 +82,6 @@ public class Movie {
 
     public void setCleanTitle(String cleanTitle) {
         this.cleanTitle = cleanTitle;
-    }
-
-    public String getSlugTitle() {
-        return slugTitle;
-    }
-
-    public void setSlugTitle(String slugTitle) {
-        this.slugTitle = slugTitle;
     }
 
     public String getSizeOnDisk() {
@@ -206,7 +187,6 @@ public class Movie {
                 ", title='" + title + '\'' +
                 ", sortTitle='" + sortTitle + '\'' +
                 ", cleanTitle='" + cleanTitle + '\'' +
-                ", slugTitle='" + slugTitle + '\'' +
                 ", sizeOnDisk='" + sizeOnDisk + '\'' +
                 ", status='" + status + '\'' +
                 ", overview='" + overview + '\'' +

@@ -35,11 +35,4 @@ public class MovieController {
         return movie;
     }
 
-    @GetMapping("/external/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public Optional<Movie> getExternalMovie(@PathVariable Long id) throws MalformedURLException {
-        Optional<Movie> movie = movieService.findExternalMovie(id);
-        return movie;
-    }
-
 }
