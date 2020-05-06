@@ -2,6 +2,7 @@ package com.pmdb.api.controllers;
 
 import com.pmdb.api.models.movie.Movie;
 import com.pmdb.api.service.MovieService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +15,8 @@ import java.util.Optional;
 @RequestMapping("/api/movies")
 public class MovieController {
 
-    final
+    @Autowired
     MovieService movieService;
-
-    public MovieController(MovieService movieService) {
-        this.movieService = movieService;
-    }
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
