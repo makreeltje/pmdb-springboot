@@ -1,6 +1,7 @@
 package com.pmdb.api.service;
 
 import com.pmdb.api.models.movie.Movie;
+import com.pmdb.api.models.movie.RadarrMovie;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.net.MalformedURLException;
@@ -14,5 +15,5 @@ public interface MovieService {
 //    Optional<Movie> findExternalMovie(Long id) throws MalformedURLException;
 
 
-    void updateExternalMovies();
+    void updateMovies();
 }

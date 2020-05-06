@@ -18,28 +18,28 @@ import java.util.Optional;
 
 @Service
 @EnableScheduling
-public class SerieServiceImpl implements SeriesService {
+public class SeriesServiceImpl implements SeriesService {
 
 
     @Autowired
     private SeriesRepository seriesRepository;
     @Autowired
     private EpisodeRepository episodeRepository;
-    private DateService dateService;
 
-    @Value("${api.sonarr}")
-    private String sonarrApi;
-    @Value("${url.sonarr}")
+    // Radarr properties
+    @Value("${sonarr.api.key}")
+    private String sonarrKey;
+    @Value("${sonarr.api.url}")
     private String sonarrUrl;
 
     private int addedEpisodes = 0;
 
     @Override
-    @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}")
+    //@Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}")
     public void updateExternalSeries() {
         RestTemplate rt = new RestTemplate();
 
-        String url = sonarrUrl + "series/?apikey=" + sonarrApi;
+        String url = sonarrUrl + "series/?apikey=" + sonarrKey;
         ResponseEntity<String> resp = rt.getForEntity(url, String.class);
         Gson gson = new Gson();
         Series[] sArray = gson.fromJson(resp.getBody(), Series[].class);
@@ -54,9 +54,9 @@ public class SerieServiceImpl implements SeriesService {
             }
 
             Optional<Series> s = seriesRepository.findById(sElement.getId());
-
-            String strDateElement = dateService.ConvertDate(sElement.getLastInfoSync());
-            String strDateS = dateService.ConvertDate(s.get().getLastInfoSync());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+            String strDateElement = formatter.format(sElement.getLastInfoSync());
+            String strDateS = formatter.format(s.get().getLastInfoSync());
 
             if (!strDateElement.equals(strDateS)) {
                 seriesRepository.deleteById(sElement.getId());
@@ -74,7 +74,7 @@ public class SerieServiceImpl implements SeriesService {
     private void updateExternalEpisodes(Long id) {
         RestTemplate rt = new RestTemplate();
 
-        String url = sonarrUrl + "episode?seriesId=" + id + "&apikey=" + sonarrApi;
+        String url = sonarrUrl + "episode?seriesId=" + id + "&apikey=" + sonarrKey;
         ResponseEntity<String> resp = rt.getForEntity(url, String.class);
         Gson gson = new Gson();
         Episode[] eArray = gson.fromJson(resp.getBody(), Episode[].class);
