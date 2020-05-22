@@ -3,7 +3,11 @@ package com.pmdb.api.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pmdb.api.models.movie.Movie;
+import com.pmdb.api.models.movie.RadarrMovie;
+import com.pmdb.api.models.movie.TmdbMovie;
 import com.pmdb.api.repository.movie.MovieRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +24,34 @@ import java.util.Optional;
 @EnableScheduling
 public class MovieServiceImpl implements MovieService {
 
-    @Autowired
-    private MovieRepository movieRepository;
-    private DateService dateService;
+    private final MovieRepository movieRepository;
 
-    @Value("${api.radarr}")
-    private String radarrApi;
-    @Value("${url.radarr}")
+    // Logger
+    Logger logger = LoggerFactory.getLogger(MovieService.class);
+
+    // Radarr properties
+    @Value("${radarr.api.key}")
+    private String radarrKey;
+    @Value("${radarr.api.url}")
     private String radarrUrl;
+    @Value("${radarr.get.movie}")
+    private String radarrGetMovie;
+    @Value("${radarr.api.path}")
+    private String radarrApiPath;
+
+    // Tmdb properties
+    @Value("${tmdb.api.key}")
+    private String tmdbKey;
+    @Value("${tmdb.api.url}")
+    private String tmdbUrl;
+    @Value("${tmdb.get.movie}")
+    private String tmdbGetMovie;
+    @Value("${tmdb.api.path}")
+    private String tmdbApiPath;
+
+    public MovieServiceImpl(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+    }
 
 
     @Override
@@ -42,50 +66,58 @@ public class MovieServiceImpl implements MovieService {
         return movie;
     }
 
-/*    @Override
-    public Optional<Movie> findExternalMovie(Long id) {
-        RestTemplate rt = new RestTemplate();
-        String url = radarrUrl + "movie/" + id + "?apikey=" + radarrApi;
-        ResponseEntity<String> resp = rt.getForEntity(url, String.class);
-        Gson gson = new GsonBuilder().create();
-        Movie m = gson.fromJson(resp.getBody(), Movie.class);
-        if (!movieRepository.existsByCleanTitle(m.getCleanTitle())) {
-            movieRepository.save(m);
-        }
-        return Optional.ofNullable(m);
-    }*/
-
     @Override
     @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}")
-    public void updateExternalMovies() {
-        RestTemplate rt = new RestTemplate();
+    public void updateMovies() {
+        logger.info("[Movies] Sync started");
+        RadarrMovie[] radarrMovieArray = getRadarrMovieArray(radarrUrl + radarrGetMovie + radarrApiPath + radarrKey);
 
-        String url = radarrUrl + "movie/?apikey=" + radarrApi;
-        ResponseEntity<String> resp = rt.getForEntity(url, String.class);
-        Gson gson = new Gson();
-        Movie[] mArray = gson.fromJson(resp.getBody(), Movie[].class);
         int addedItems = 0;
         int updatedItems = 0;
 
-        for (Movie mElement : mArray) {
+        for (RadarrMovie radarrMovie : radarrMovieArray) {
 
-            if (!movieRepository.existsById(mElement.getId())) {
-                movieRepository.save(mElement);
+            if (!movieRepository.existsById(radarrMovie.getId())) {
+                TmdbMovie tmdbMovie = getTmdbMovie(tmdbUrl + tmdbGetMovie + radarrMovie.getTmdbId() + tmdbApiPath + tmdbKey);
+                Movie movie = new Movie(radarrMovie, tmdbMovie);
+                movieRepository.save(movie);
                 addedItems++;
             }
 
-            Optional<Movie> m = movieRepository.findById(mElement.getId());
+            Optional<Movie> m = movieRepository.findById(radarrMovie.getId());
 
-            String strDateElement = dateService.ConvertDate(mElement.getLastInfoSync());
-            String strDateM = dateService.ConvertDate(m.get().getLastInfoSync());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+            String radarrMovieDate = formatter.format(radarrMovie.getLastInfoSync());
+            String movieDate = formatter.format(m.get().getLastInfoSync());
 
-            if (!strDateElement.equals(strDateM)) {
-                movieRepository.deleteById(mElement.getId());
-                movieRepository.save(mElement);
+            if (!radarrMovieDate.equals(movieDate)) {
+                TmdbMovie tmdbMovie = getTmdbMovie(tmdbUrl + tmdbGetMovie + radarrMovie.getTmdbId() + tmdbApiPath + tmdbKey);
+                Movie movie = new Movie(radarrMovie, tmdbMovie);
+                movieRepository.deleteById(radarrMovie.getId());
+                movieRepository.save(movie);
                 updatedItems++;
             }
         }
-        System.out.println("[Movie] Added items:   " + addedItems);
-        System.out.println("[Movie] Updated items: " + updatedItems);
+        logger.info("[Movies] " + addedItems + " added");
+        logger.info("[Movies] " + updatedItems + " updated");
+        logger.info("[Movies] Sync finished");
+    }
+
+    private RadarrMovie[] getRadarrMovieArray(String url) {
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> resp = rt.getForEntity(url, String.class);
+        Gson gson = new Gson();
+        RadarrMovie[] radarrMovieArray = gson.fromJson(resp.getBody(), RadarrMovie[].class);
+
+        return radarrMovieArray;
+    }
+
+    private TmdbMovie getTmdbMovie(String url) {
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> resp = rt.getForEntity(url, String.class);
+        Gson gson = new Gson();
+        TmdbMovie tmdbMovie = gson.fromJson(resp.getBody(), TmdbMovie.class);
+
+        return tmdbMovie;
     }
 }
