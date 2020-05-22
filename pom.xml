@@ -14,6 +14,14 @@
 	<name>app</name>
 	<description>Background API for pmdb (Plex Movie Dashboard)</description>
 
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Internal repo</name>
+			<url>file:///home/thara/testesb/in</url>
+		</repository>
+	</distributionManagement>
+
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
