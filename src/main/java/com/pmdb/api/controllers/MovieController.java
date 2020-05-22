@@ -15,21 +15,22 @@ import java.util.Optional;
 @RequestMapping("/api/movies")
 public class MovieController {
 
-    @Autowired
-    MovieService movieService;
+    final MovieService movieService;
+
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     public Collection<Movie> getAllMovies() {
-        Collection<Movie> movies = movieService.getAllMovies();
-        return movies;
+        return movieService.getAllMovies();
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasRole('USER')")
     public Optional<Movie> getMovie(@PathVariable Long id) {
-        Optional<Movie> movie = movieService.findById(id);
-        return movie;
+        return movieService.findById(id);
     }
 
 }

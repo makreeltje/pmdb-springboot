@@ -12,7 +12,6 @@ import com.pmdb.api.repository.user.RoleRepository;
 import com.pmdb.api.repository.user.UserRepository;
 import com.pmdb.api.security.jwt.JwtUtils;
 import com.pmdb.api.security.services.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,23 +30,21 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+    final AuthenticationManager authenticationManager;
+    final UserRepository userRepository;
+    final RoleRepository roleRepository;
+    final EmailRepository emailRepository;
+    final PasswordEncoder encoder;
+    final JwtUtils jwtUtils;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    EmailRepository emailRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, EmailRepository emailRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.emailRepository = emailRepository;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -107,19 +104,31 @@ public class AuthController {
                 switch (role) {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Role admin is not found."));
                         roles.add(adminRole);
 
                         break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Error: Role moderator is not found."));
                         roles.add(modRole);
+
+                        break;
+                    case "request":
+                        Role requestRole = roleRepository.findByName(ERole.ROLE_REQUEST)
+                                .orElseThrow(() -> new RuntimeException("Error: Role request is not found."));
+                        roles.add(requestRole);
+
+                        break;
+                    case "approve":
+                        Role approveRole = roleRepository.findByName(ERole.ROLE_APPROVE)
+                                .orElseThrow(() -> new RuntimeException("Error: Role approve is not found."));
+                        roles.add(approveRole);
 
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Error: Role user is not found."));
                         roles.add(userRole);
                 }
             });

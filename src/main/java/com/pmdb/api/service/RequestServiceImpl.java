@@ -1,23 +1,27 @@
 package com.pmdb.api.service;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pmdb.api.models.request.Movie;
 import com.pmdb.api.models.request.Request;
-import com.pmdb.api.repository.request.RequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pmdb.api.payload.request.MovieRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.Valid;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
+@Service
 public class RequestServiceImpl implements RequestService {
 
-    @Autowired
-    private RequestRepository requestRepository;
+    // Logger
+    Logger logger = LoggerFactory.getLogger(MovieService.class);
 
     // Ombi properties
     @Value("${ombi.api.key}")
@@ -26,22 +30,48 @@ public class RequestServiceImpl implements RequestService {
     private String ombiUrl;
     @Value("${ombi.search.movie}")
     private String ombiSearchMovie;
+    @Value("${ombi.search.popular}")
+    private String ombiPopularMovie;
+    @Value("${ombi.request.movie}")
+    private String ombiRequestMovie;
 
-    public Request[] searchMovie(String searchTerm) {
-        Request[] result = getRequestArray(ombiUrl + ombiSearchMovie + "/" + searchTerm);
-
-        return result;
+    public Collection<Movie> searchMovie(String searchTerm) {
+        return getRequestArray(ombiUrl + ombiSearchMovie + "/" + searchTerm);
     }
 
-    private Request[] getRequestArray(String url) {
+    public Collection<Movie> popularMovie() {
+        return getRequestArray(ombiUrl + ombiPopularMovie);
+    }
+
+    private Collection<Movie> getRequestArray(String url) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("apiKey", ombiKey);
         HttpEntity entity = new HttpEntity(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> resp = rt.exchange(url, HttpMethod.GET, entity, String.class);
+        Type requestList = new TypeToken<ArrayList<Movie>>(){}.getType();
         Gson gson = new Gson();
-        Request[] requests = gson.fromJson(resp.getBody(), Request[].class);
 
-        return requests;
+        return gson.fromJson(resp.getBody(), requestList);
     }
+
+    @Override
+    public ResponseEntity<?> requestMovie(MovieRequest movieRequest) {
+        RestTemplate rt = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("apiKey", ombiKey);
+
+        HttpEntity<MovieRequest> entity = new HttpEntity(movieRequest, headers);
+        logger.info(String.valueOf(rt.exchange(ombiUrl + ombiRequestMovie, HttpMethod.POST, entity, String.class)));
+        ResponseEntity<String> resp = rt.exchange(ombiUrl + ombiRequestMovie, HttpMethod.POST, entity, String.class);
+        Type requestList = new TypeToken<ArrayList<Request>>(){}.getType();
+        Gson gson = new Gson();
+
+        return rt.exchange(ombiUrl + ombiRequestMovie, HttpMethod.POST, entity, String.class);
+
+    }
+
 }

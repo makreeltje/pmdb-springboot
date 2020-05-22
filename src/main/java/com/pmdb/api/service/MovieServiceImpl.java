@@ -24,8 +24,7 @@ import java.util.Optional;
 @EnableScheduling
 public class MovieServiceImpl implements MovieService {
 
-    @Autowired
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
     // Logger
     Logger logger = LoggerFactory.getLogger(MovieService.class);
@@ -50,6 +49,9 @@ public class MovieServiceImpl implements MovieService {
     @Value("${tmdb.api.path}")
     private String tmdbApiPath;
 
+    public MovieServiceImpl(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+    }
 
 
     @Override

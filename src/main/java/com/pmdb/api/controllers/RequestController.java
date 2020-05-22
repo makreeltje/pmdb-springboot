@@ -1,9 +1,9 @@
 package com.pmdb.api.controllers;
 
-import com.pmdb.api.models.movie.Movie;
-import com.pmdb.api.models.request.Request;
+import com.pmdb.api.models.request.Movie;
+import com.pmdb.api.payload.request.MovieRequest;
 import com.pmdb.api.service.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +15,28 @@ import java.util.Collection;
 @RequestMapping("/api/request")
 public class RequestController {
 
-    @Autowired
-    RequestService requestService;
+    final RequestService requestService;
+
+    public RequestController(RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     @GetMapping("/movie")
-    @PreAuthorize("hasRole('USER')")
-    public Request[] getSearchResults(@Valid @RequestBody String searchTerm) {
-        Request[] requests = requestService.searchMovie(searchTerm);
-        return requests;
+    @PreAuthorize("hasRole('ADMIN') or hasRole('REQUEST')")
+    public Collection<Movie> getSearchResults(@Valid @RequestParam String query) {
+        return requestService.searchMovie(query);
+    }
+
+    @GetMapping("/movie/popular")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('REQUEST')")
+    public Collection<Movie> getPopularResults() {
+        return requestService.popularMovie();
+    }
+
+    @PostMapping("/movie/post")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('REQUEST')")
+    public ResponseEntity<?> requestMovie(@Valid @RequestBody MovieRequest movieRequest) {
+        ResponseEntity<?> response = requestService.requestMovie(movieRequest);
+        return response;
     }
 }
