@@ -1,7 +1,4 @@
-FROM tomcat:9.0.20-jre8
-
-WORKDIR .
-
-COPY ./target/*.jar ./app-0.0.1.jar
-
-CMD ["java", "-jar", "app-0.0.1.jar"]
+FROM openjdk:8-jdk-alpine
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} pmdb-0.1.0.jar
+ENTRYPOINT ["java","-jar","/pmdb-0.1.0.jar"]
