@@ -1,4 +1,7 @@
-FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app-0.0.1.jar
-ENTRYPOINT ["java","-jar","/app-0.0.1.jar"]
+FROM tomcat:9.0.20-jre8
+
+WORKDIR .
+
+COPY ./target/*.jar ./app-0.0.1.jar
+
+CMD ["java", "-jar", "app-0.0.1.jar"]
