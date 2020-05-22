@@ -1,10 +1,7 @@
 package com.pmdb.api.service;
 
 import com.pmdb.api.models.movie.Movie;
-import com.pmdb.api.models.movie.RadarrMovie;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Optional;
 
