@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.pmdb</groupId>
-	<artifactId>api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>api</name>
+	<artifactId>app</artifactId>
+	<version>0.0.1</version>
+	<name>app</name>
 	<description>Background API for pmdb (Plex Movie Dashboard)</description>
 
 	<properties>
