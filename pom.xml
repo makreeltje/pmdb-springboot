@@ -78,7 +78,7 @@
 				<artifactId>docker-client</artifactId>
 				<version>8.16.0</version>
 				<configuration>
-					<repository>pmdb-springboot/${project.artifactId}</repository>
+					<repository>rick043/${project.artifactId}</repository>
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
