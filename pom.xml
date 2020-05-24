@@ -9,18 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.pmdb</groupId>
-	<artifactId>app</artifactId>
-	<version>0.0.1</version>
-	<name>app</name>
+	<artifactId>pmdb-springboot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>pmdb-springboot</name>
 	<description>Background API for pmdb (Plex Movie Dashboard)</description>
-
-	<distributionManagement>
-		<repository>
-			<id>internal.repo</id>
-			<name>Internal repo</name>
-			<url>file:///home/thara/testesb/in</url>
-		</repository>
-	</distributionManagement>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -81,7 +73,30 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-client</artifactId>
+				<version>8.16.0</version>
+				<configuration>
+					<repository>pmdb-springboot/${project.artifactId}</repository>
+					<tag>${project.version}</tag>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default</id>
+						<phase>install</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<finalName>pmdb-springboot</finalName>
 	</build>
 
 </project>
