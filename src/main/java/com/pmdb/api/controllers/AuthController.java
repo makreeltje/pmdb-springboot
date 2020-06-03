@@ -13,6 +13,7 @@ import com.pmdb.api.repository.user.UserRepository;
 import com.pmdb.api.security.jwt.JwtUtils;
 import com.pmdb.api.security.services.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,6 +67,8 @@ public class AuthController {
                 userDetails.getEmail(),
                 roles));
     }
+
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {

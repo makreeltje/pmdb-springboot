@@ -88,7 +88,11 @@ public class MovieServiceImpl implements MovieService {
 
             SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
             String radarrMovieDate = formatter.format(radarrMovie.getLastInfoSync());
-            String movieDate = formatter.format(m.get().getLastInfoSync());
+            String movieDate = null;
+            if (m.isPresent()){
+                movieDate = formatter.format(m.get().getLastInfoSync());
+            }
+
 
             if (!radarrMovieDate.equals(movieDate)) {
                 TmdbMovie tmdbMovie = getTmdbMovie(tmdbUrl + tmdbGetMovie + radarrMovie.getTmdbId() + tmdbApiPath + tmdbKey);

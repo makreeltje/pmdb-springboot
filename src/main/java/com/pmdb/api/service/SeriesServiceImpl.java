@@ -56,7 +56,11 @@ public class SeriesServiceImpl implements SeriesService {
             Optional<Series> s = seriesRepository.findById(sElement.getId());
             SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
             String strDateElement = formatter.format(sElement.getLastInfoSync());
-            String strDateS = formatter.format(s.get().getLastInfoSync());
+            String strDateS = null;
+            if(s.isPresent()){
+                strDateS = formatter.format(s.get().getLastInfoSync());
+            }
+
 
             if (!strDateElement.equals(strDateS)) {
                 seriesRepository.deleteById(sElement.getId());
